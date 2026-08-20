@@ -17,27 +17,33 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
 # ------------------------------------------------------------
-# Theme / styling (Blue & White)
+# Theme / styling (Black + White + Navy Blue)
 # ------------------------------------------------------------
 
 st.markdown(
     """
     <style>
-        /* App background */
+        /* App background - deep black */
         .stApp {
-            background-color: #f4f8ff;
+            background-color: #0a0a0a;
+            color: #ffffff;
         }
 
-        /* Main title banner */
+        /* General text colour */
+        .stApp, .stApp p, .stApp label, .stApp span, .stApp li {
+            color: #ffffff;
+        }
+
+        /* Main title banner - navy blue gradient */
         .app-banner {
-            background: linear-gradient(135deg, #0b5ed7 0%, #1e88e5 100%);
+            background: linear-gradient(135deg, #0a1f44 0%, #1e3a8a 100%);
             padding: 28px 32px;
             border-radius: 14px;
             color: #ffffff;
             margin-bottom: 24px;
-            box-shadow: 0 6px 18px rgba(11, 94, 215, 0.25);
+            border: 1px solid #1e3a8a;
+            box-shadow: 0 6px 22px rgba(30, 58, 138, 0.45);
         }
         .app-banner h1 {
             color: #ffffff;
@@ -46,39 +52,44 @@ st.markdown(
             font-weight: 700;
         }
         .app-banner p {
-            color: #e3f0ff;
+            color: #cde0ff;
             margin: 6px 0 0 0;
             font-size: 15px;
         }
 
-        /* Section headers */
+        /* Section headers - navy blue bar */
         .section-header {
-            background-color: #0b5ed7;
+            background: linear-gradient(90deg, #0a1f44 0%, #1e3a8a 100%);
             color: #ffffff;
             padding: 10px 18px;
             border-radius: 8px;
             font-size: 20px;
             font-weight: 600;
             margin: 8px 0 18px 0;
+            border-left: 5px solid #3b82f6;
         }
 
-        /* Metric cards */
+        /* Metric cards - dark with navy accent */
         div[data-testid="stMetric"] {
-            background-color: #ffffff;
-            border: 1px solid #d6e4ff;
-            border-left: 5px solid #0b5ed7;
+            background-color: #111a2e;
+            border: 1px solid #1e3a8a;
+            border-left: 5px solid #3b82f6;
             border-radius: 10px;
             padding: 16px 18px;
-            box-shadow: 0 2px 8px rgba(11, 94, 215, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
         div[data-testid="stMetricLabel"] {
-            color: #0b5ed7;
+            color: #7cb0ff;
             font-weight: 600;
         }
+        div[data-testid="stMetricValue"] {
+            color: #ffffff;
+        }
 
-        /* Sidebar */
+        /* Sidebar - navy blue */
         section[data-testid="stSidebar"] {
-            background-color: #0b5ed7;
+            background: linear-gradient(180deg, #0a1f44 0%, #0a0a0a 100%);
+            border-right: 1px solid #1e3a8a;
         }
         section[data-testid="stSidebar"] * {
             color: #ffffff !important;
@@ -88,12 +99,19 @@ st.markdown(
         .stDataFrame {
             border-radius: 10px;
             overflow: hidden;
+            border: 1px solid #1e3a8a;
+        }
+
+        /* Text input */
+        .stTextInput input {
+            background-color: #111a2e;
+            color: #ffffff;
+            border: 1px solid #1e3a8a;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
 
 # ------------------------------------------------------------
 # 1. Employee data
@@ -122,7 +140,6 @@ EMPLOYEE_RECORDS = [
     {"employee_id": "E020", "employee_name": "Joseph Maina", "department": "IT", "employment_type": "Full-time", "days_expected": 22, "days_present": 21, "leave_days": 1, "hours_worked": 194, "hourly_rate": 950},
 ]
 
-
 # ------------------------------------------------------------
 # 2. Constants
 # ------------------------------------------------------------
@@ -134,7 +151,6 @@ STANDARD_HOURS = {
 }
 
 OVERTIME_MULTIPLIER = 1.5
-
 
 # ------------------------------------------------------------
 # 3. Employment type standardisation
@@ -156,7 +172,6 @@ def standardise_employment_type(employment_type):
     }
 
     return mappings.get(value)
-
 
 # ------------------------------------------------------------
 # 4. Validate one employee record
@@ -211,7 +226,6 @@ def validate_record(record):
 
     return errors
 
-
 # ------------------------------------------------------------
 # 5. Validate all records
 # ------------------------------------------------------------
@@ -234,7 +248,6 @@ def validate_all_records(records):
             valid_records.append(valid_record)
 
     return valid_records, invalid_records
-
 
 # ------------------------------------------------------------
 # 6. Attendance calculations
@@ -261,7 +274,6 @@ def calculate_attendance(record):
         "attendance_percentage": attendance_percentage,
         "attendance_category": category,
     }
-
 
 # ------------------------------------------------------------
 # 7. Overtime and payment calculations
@@ -292,7 +304,6 @@ def calculate_overtime(record):
         "total_payment": total_payment,
     }
 
-
 # ------------------------------------------------------------
 # 8. Prepare calculated employee records
 # ------------------------------------------------------------
@@ -309,7 +320,6 @@ def prepare_records(valid_records):
 
     return prepared_records
 
-
 # ------------------------------------------------------------
 # Helpers for the UI
 # ------------------------------------------------------------
@@ -320,16 +330,14 @@ def load_data():
     valid_records = prepare_records(valid_records)
     return valid_records, invalid_records
 
-
 def records_to_df(records):
     return pd.DataFrame(records)
 
-
 def category_badge(category):
     colors = {
-        "Excellent": "#198754",
-        "Satisfactory": "#0d6efd",
-        "Needs improvement": "#dc3545",
+        "Excellent": "#16a34a",
+        "Satisfactory": "#3b82f6",
+        "Needs improvement": "#ef4444",
     }
     color = colors.get(category, "#6c757d")
     return (
@@ -337,10 +345,8 @@ def category_badge(category):
         f"padding:3px 10px;border-radius:12px;font-size:13px;'>{category}</span>"
     )
 
-
 def section(title):
     st.markdown(f"<div class='section-header'>{title}</div>", unsafe_allow_html=True)
-
 
 # ------------------------------------------------------------
 # Load data once
@@ -348,7 +354,6 @@ def section(title):
 
 valid_records, invalid_records = load_data()
 supplied_count = len(EMPLOYEE_RECORDS)
-
 
 # ------------------------------------------------------------
 # Banner
@@ -363,7 +368,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
 
 # ------------------------------------------------------------
 # Sidebar navigation
@@ -390,7 +394,6 @@ st.sidebar.metric("Supplied records", supplied_count)
 st.sidebar.metric("Valid records", len(valid_records))
 st.sidebar.metric("Invalid records", len(invalid_records))
 
-
 # ============================================================
 # VIEWS
 # ============================================================
@@ -412,12 +415,11 @@ if menu == "🏠 Overview":
 
     st.markdown("### Attendance by Employee")
     chart_df = df.set_index("employee_name")[["attendance_percentage"]]
-    st.bar_chart(chart_df, color="#0b5ed7")
+    st.bar_chart(chart_df, color="#3b82f6")
 
     st.markdown("### Overtime Payment by Employee")
     ot_df = df.set_index("employee_name")[["overtime_payment"]]
-    st.bar_chart(ot_df, color="#1e88e5")
-
+    st.bar_chart(ot_df, color="#1e3a8a")
 
 # ------------------------------------------------------------
 # Valid Records
@@ -476,7 +478,6 @@ elif menu == "👥 Valid Records":
             hide_index=True,
         )
 
-
 # ------------------------------------------------------------
 # Search Employee
 # ------------------------------------------------------------
@@ -516,7 +517,6 @@ elif menu == "🔍 Search Employee":
     else:
         st.info("Type an employee ID (e.g. E020) or full name (e.g. Joseph Maina).")
 
-
 # ------------------------------------------------------------
 # Attendance Analysis
 # ------------------------------------------------------------
@@ -555,7 +555,6 @@ elif menu == "📈 Attendance Analysis":
         with c2:
             st.error(f"**Lowest Attendance: {lowest:.2f}%**\n\n{', '.join(lowest_emps)}")
 
-
 # ------------------------------------------------------------
 # Attendance Improvement
 # ------------------------------------------------------------
@@ -584,7 +583,6 @@ elif menu == "⚠️ Attendance Improvement":
             use_container_width=True,
             hide_index=True,
         )
-
 
 # ------------------------------------------------------------
 # Overtime Analysis
@@ -638,7 +636,6 @@ elif menu == "⏱️ Overtime Analysis":
             ", ".join(df[df["total_payment"] == max_total]["employee_name"].tolist()),
         )
 
-
 # ------------------------------------------------------------
 # Department Comparison
 # ------------------------------------------------------------
@@ -674,17 +671,16 @@ elif menu == "🏢 Department Comparison":
         c1, c2 = st.columns(2)
         with c1:
             st.markdown("**Average Attendance by Department**")
-            st.bar_chart(grouped.set_index("department")[["average_attendance"]], color="#0b5ed7")
+            st.bar_chart(grouped.set_index("department")[["average_attendance"]], color="#3b82f6")
         with c2:
             st.markdown("**Overtime Expenditure by Department**")
-            st.bar_chart(grouped.set_index("department")[["overtime_expenditure"]], color="#1e88e5")
+            st.bar_chart(grouped.set_index("department")[["overtime_expenditure"]], color="#1e3a8a")
 
         highest = grouped["overtime_expenditure"].max()
         highest_depts = grouped[grouped["overtime_expenditure"] == highest]["department"].tolist()
         st.warning(
             f"**Highest Overtime Expenditure:** {', '.join(highest_depts)} ({highest:,.2f})"
         )
-
 
 # ------------------------------------------------------------
 # Invalid Records
@@ -705,7 +701,6 @@ elif menu == "🚫 Invalid Records":
                 st.markdown("**Reason(s):**")
                 for reason in item["reasons"]:
                     st.markdown(f"- {reason}")
-
 
 # ------------------------------------------------------------
 # Organisational Summary
@@ -747,14 +742,13 @@ elif menu == "📋 Organisational Summary":
                 "Count": [int(excellent), int(satisfactory), int(needs_improvement)],
             }
         ).set_index("Category")
-        st.bar_chart(cat_df, color="#0b5ed7")
+        st.bar_chart(cat_df, color="#3b82f6")
 
         st.info(f"**Employees with unexplained absences:** {int(unexplained_absences)}")
-
 
 # ------------------------------------------------------------
 # Footer
 # ------------------------------------------------------------
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Built with Streamlit • Blue & White theme")
+st.sidebar.caption("Built with Streamlit • Black + Navy Blue theme")
