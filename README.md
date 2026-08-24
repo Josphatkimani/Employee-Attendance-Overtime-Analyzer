@@ -1,68 +1,108 @@
 # Employee Attendance & Overtime Analyser
 
-An interactive Streamlit web application that validates employee records and analyses
-attendance, overtime and payments for an organisation.
+An MSc *Fundamentals of Programming* capstone project. A menu-driven Python program
+that validates employee records and analyses attendance, overtime and payments for
+an organisation.
 
-Built as an MSc *Fundamentals of Programming* capstone project. The app converts a
-console-based Python analyser into a clean, browser-based dashboard with a blue and
-white theme.
+## Problem statement
 
-## Features
+Organisations need to monitor staff attendance and compute overtime pay accurately.
+Raw employee data is often inconsistent (mixed employment-type spellings, missing
+IDs or departments, impossible values such as negative hours). Processing this data
+by hand is slow and error-prone.
 
-- **Overview dashboard** with key metrics and attendance / overtime charts.
-- **Valid records** shown in a sortable, formatted table.
-- **Employee search** by ID (e.g. `E020`) or full name (e.g. `Joseph Maina`).
-- **Attendance analysis** with highest and lowest performers.
-- **Attendance improvement** list for employees below the satisfactory threshold.
-- **Overtime analysis** highlighting the top overtime and payment earners.
-- **Department comparison** with average attendance and overtime expenditure charts.
-- **Invalid records** with the specific reason each record failed validation.
-- **Organisational summary** of totals, averages and attendance categories.
+This program takes a set of employee records, validates them against a clear set of
+rules, separates valid from invalid records, and then produces attendance and
+overtime analysis to support management decisions.
 
-## Business rules
+## Objectives
 
-- **Employment types** are standardised (e.g. `full time`, `FULL-TIME` all map to `Full-time`).
-- **Standard hours:** Full-time = 160, Part-time = 80, Contract = 120.
-- **Overtime** is paid at 1.5x the hourly rate for hours worked beyond standard hours.
-- **Attendance %** = (days present + leave days) / expected days x 100.
-- **Attendance categories:** Excellent (>= 95%), Satisfactory (>= 85%), Needs improvement (< 85%).
-- A record is **invalid** if it is missing an ID, name or department, has non-positive
-  expected days or hourly rate, has negative present days, leave days or hours worked,
-  has present + leave days exceeding expected days, or has an unrecognised employment type.
+- Validate each employee record and clearly report why any record is rejected.
+- Standardise inconsistent employment-type values (e.g. `full time` to `Full-time`).
+- Calculate attendance percentage, absence days and an attendance category.
+- Calculate standard hours, overtime hours and payments (regular, overtime, total).
+- Identify best and worst performers for attendance and overtime.
+- Compare departments by average attendance and overtime expenditure.
+- Produce an organisation-wide summary.
 
 ## Project structure
 
 ```
-EmployeeAttendanceAnalyzer/
-├── app.py                 # Streamlit application
-├── requirements.txt       # Python dependencies
-├── .streamlit/
-│   └── config.toml        # Blue & white theme settings
-└── README.md
+project-name/
+├── README.md          # This file
+├── main.py            # The main program (console application)
+├── tests.md           # Manual test cases and expected results
+├── docs/
+│   └── algorithm.pdf  # Algorithm design / flow documentation
+└── .gitignore
 ```
 
-## Run locally
+## Program functions
 
-Requires Python 3.9 or later.
+The core logic in `main.py` is organised into these functions:
+
+| Function | Purpose |
+|----------|---------|
+| `standardise_employment_type()` | Maps spelling variations to recognised employment types. |
+| `validate_record()` | Validates a single record and returns a list of errors. |
+| `validate_all_records()` | Splits all records into valid and invalid lists. |
+| `calculate_attendance()` | Computes absence days, attendance % and category. |
+| `calculate_overtime()` | Computes standard/overtime hours and payments. |
+| `prepare_records()` | Adds attendance and overtime results to valid records. |
+| `view_valid_records()` | Displays all valid employee records. |
+| `search_employee()` | Finds an employee by ID or name. |
+| `analyse_attendance()` | Lists attendance and highlights highest/lowest. |
+| `view_attendance_improvement()` | Lists employees needing attendance improvement. |
+| `analyse_overtime()` | Lists overtime/payments and top earners. |
+| `compare_departments()` | Compares departments by attendance and overtime cost. |
+| `view_invalid_records()` | Displays rejected records with reasons. |
+| `organisational_summary()` | Prints organisation-wide totals and averages. |
+| `display_menu()` / `main()` | Menu loop that drives the program. |
+
+## Validation rules
+
+A record is **invalid** if any of the following is true:
+
+- Employee ID is missing.
+- Employee name is missing.
+- Department is missing.
+- Expected days is not greater than zero.
+- Present days is negative.
+- Leave days is negative.
+- Present days plus leave days exceed expected days.
+- Hours worked is negative.
+- Hourly rate is not greater than zero.
+- Employment type is not recognised (not Full-time, Part-time or Contract after standardising).
+
+## Calculation rules
+
+- **Standard hours:** Full-time = 160, Part-time = 80, Contract = 120.
+- **Overtime hours** = hours worked minus standard hours (never below zero).
+- **Overtime pay** = overtime hours x hourly rate x 1.5.
+- **Attendance %** = (present days + leave days) / expected days x 100.
+- **Attendance categories:** Excellent (>= 95%), Satisfactory (>= 85%), Needs improvement (< 85%).
+
+## Running instructions
+
+Requires Python 3.9 or later. No external libraries are needed for the console program.
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+python main.py
 ```
 
-The app opens in your browser at `http://localhost:8501`.
+Follow the on-screen menu (options 1 to 9) to view records, search, run analyses
+or exit.
 
-## Deploy on Streamlit Community Cloud
+## Optional: Streamlit interface
 
-1. Push this project to a GitHub repository.
-2. Go to [share.streamlit.io](https://share.streamlit.io) and sign in with GitHub.
-3. Click **Create app → Deploy a public app from GitHub**.
-4. Select the repository, set the branch to `main` and the main file path to `app.py`.
-5. Click **Deploy**. The app installs the dependencies and launches at a shareable URL.
+A Streamlit app (in the `streamlit/` folder) provides a graphical, browser-based
+front end for the same analysis. It is only a UI/UX layer. All the core logic and
+rules live in `main.py`. The Streamlit app is optional and not required to run or
+assess the project.
 
-Pushing new commits to the repository automatically redeploys the app.
+To run it locally:
 
-## Tech stack
-
-- [Streamlit](https://streamlit.io) - web app framework
-- [pandas](https://pandas.pydata.org) - data handling and aggregation
+```bash
+pip install streamlit pandas
+streamlit run streamlit/app.py
+```
